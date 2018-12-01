@@ -56,24 +56,29 @@ def next_char():
         return file_text[i]
 
 
-state = 1
+def prepare_to_write(array_from, table_to):
+    for line in array_from:
+        row = []
+        for k, v in line.items():
+            row.append(v)
+        table_to.append_row(row)
 
 
-def save_inf():
+def write_in_file():
+    prepare_to_write(lexems_out, table)
     lex_table = open('lex.txt', 'w')
     lex_table.write(str(table))
     lex_table.close()
 
-    # print(str(idn_table))
+    prepare_to_write(idn_out, idn_table)
     idn_t = open('idn.txt', 'w')
     idn_t.write(str(idn_table))
     idn_t.close()
 
-    # print(str(con_table))
+    prepare_to_write(con_out,con_table)
     con_t = open('const.txt', 'w+')
     con_t.write(str(con_table))
     con_t.close()
-    sys.exit()
 
 
 def add_lex(lex):
@@ -83,60 +88,48 @@ def add_lex(lex):
     global lexems_out
     global idn_out
 
-    if not is_spog:
-        if lex == 'int' or lex == 'float':
-            error('unallowed declaration', lex)
-        elif lex not in lexems_in:
-            if not (lex == '' or lex[0].isdigit() or lex[0] == '.'):
-                for one_lex in idn_out:
-                    if lex == one_lex['lex']:
-                        break
-                else:
-                    error('undeclarated variable', lex)
-
-    if lex == '{':
-        is_spog = False
-
     if lex in lexems_in:
         code = lexems_in.index(lex) + 1
-        if lex == 'int' or lex == 'float':
-            last_type = lex
         idn_code = ''
         con_code = ''
-    elif lex[0].isdigit() or (lex[0] == '.' and lex[1].isdigit()):
-        code = 101
-        con_code = len(con_table) + 1
-        con_table.append_row([con_code, lex, type_of_const(float(lex))])
-        con_out.append({'code': con_code, 'name': lex, 'type': type_of_const(float(lex))})
-        idn_code = ''
-    else:
+
+        if lex == 'int' or lex == 'float':
+            if not is_spog:
+                error('unallowed declaration', lex)
+            last_type = lex
+        elif lex == '\n':
+            lex = '\\n'
+        elif lex == '{':
+            is_spog = False
+    elif lex[0].isalpha():
         value = 0
         code = 100
-        idn_code = len(idn_table) + 1
+        idn_code = len(idn_out) + 1
         con_code = ''
 
-
-        if not idn_out:
-            idn_table.append_row([idn_code, lex, last_type, value])
-            idn_out.append({'idn_code': idn_code, 'lex': lex, 'type': last_type, 'value': value})
+        for idn in idn_out:
+            if lex == idn['lex']:
+                idn_code = idn['idn_code']
+                if is_spog:
+                    error('re-declaration variable', lex)
+                break
         else:
-            for lex_line in idn_out:
-                if lex == lex_line['lex']:
-                    idn_code = lex_line['idn_code']
-                    if is_spog:
-                        error('re-declaration variable', lex)
-                    break
+            if is_spog:
+                idn_out.append({'idn_code': idn_code, 'lex': lex, 'type': last_type, 'value': value})
             else:
-                    idn_table.append_row([idn_code, lex, last_type, value])
-                    idn_out.append({'idn_code': idn_code, 'lex': lex, 'type': last_type, 'value': value})
+                error('undeclarated variable', lex)
+    else:
+        code = 101
+        con_code = len(con_out) + 1
+        con_out.append({'code': con_code, 'name': lex, 'type': type_of_const(float(lex))})
+        idn_code = ''
 
-    if lex == '\n':
-        lex = '\\n'
-    table.append_row([len(table) + 1, line_of_file, lex, code, idn_code, con_code])
-    lexems_out.append({'number': len(table) + 1, 'line': line_of_file, 'lex': lex, 'code': code, 'idn_code': idn_code,
+
+    lexems_out.append({'number': len(lexems_out) + 1, 'line': line_of_file, 'lex': lex, 'code': code, 'idn_code': idn_code,
                        'con_code': con_code})
 
 
+state = 1
 j = 0
 
 while j <= (len(file_text) + 3):
@@ -178,8 +171,8 @@ while j <= (len(file_text) + 3):
         elif ch in rozdilniki:
             lex += ch
             if ch == '':
-                save_inf()
-                #sys.exit()
+                write_in_file()
+                sys.exit()
             HAS_TO_READ = True
             add_lex(lex)
             state = 1
@@ -223,17 +216,17 @@ while j <= (len(file_text) + 3):
             error('unknown idn', lex)
             state = 1
     elif state == 5:
-
+        lex += ch
         ch = next_char()
         if ch.isdigit():
             state = 5
-            lex += ch
+
         elif ch == 'e' or ch == 'E':
             state = 6
-            lex += ch
-        #elif ch in rozdilniki:
-         #   add_lex(lex)
-          #  state = 1
+
+        elif ch in rozdilniki:
+            add_lex(lex)
+            state = 1
         else:
             add_lex(lex)
             state = 1
@@ -301,5 +294,3 @@ while j <= (len(file_text) + 3):
         #HAS_TO_READ = True
         add_lex(lex)
         state = 1
-
-save_inf()
