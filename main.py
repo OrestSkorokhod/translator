@@ -156,7 +156,7 @@ def add_lex(lex):
     else:
         code = 101
         con_code = len(con_out) + 1
-        con_out.append({'code': con_code, 'name': lex, 'type': type_of_const(float(lex))})
+        con_out.append({'code': con_code, 'name': lex, 'type': type_of_const(float(lex)), 'value': float(lex)})
         idn_code = ''
 
     lexems_out.append({'number': len(lexems_out) + 1, 'line': line_of_file, 'lex': lex,
