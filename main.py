@@ -28,14 +28,14 @@ idn_table = BeautifulTable()
 idn_table.column_headers = ['Code', 'Name', 'Type', 'Value']
 
 con_table = BeautifulTable()
-con_table.column_headers = ['Code', 'Name', 'Type']
+con_table.column_headers = ['Code', 'Name', 'Type', 'Value']
 
 
 def type_of_const(const):
-    if const % 1 == 0:
-        return 'int'
-    else:
+    if const.count('.') or const.count('e') or const.count('E'):
         return 'float'
+    else:
+        return 'int'
 
 
 def error(type_of_error, error_lex):
@@ -156,7 +156,9 @@ def add_lex(lex):
     else:
         code = 101
         con_code = len(con_out) + 1
-        con_out.append({'code': con_code, 'name': lex, 'type': type_of_const(float(lex)), 'value': float(lex)})
+        type_const = type_of_const(lex)
+        con_out.append({'code': con_code, 'name': lex, 'type': type_const,
+                        'value': float(lex) if type_const == 'float' else int(lex)})
         idn_code = ''
 
     lexems_out.append({'number': len(lexems_out) + 1, 'line': line_of_file, 'lex': lex,
