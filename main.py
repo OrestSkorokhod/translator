@@ -22,7 +22,7 @@ lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
 errors = ['unknown idn', 'unknown symbol', 'unallowed declaration', 'undeclarated variable', 're-declaration variable']
 
 table = BeautifulTable()
-table.column_headers = ['№', 'Row', 'Lex', 'Lex code', 'Code of IDN', 'Code of CONST']
+table.column_headers = ['#', 'Row', 'Lex', 'Lex code', 'Code of IDN', 'Code of CONST']
 
 idn_table = BeautifulTable()
 idn_table.column_headers = ['Code', 'Name', 'Type', 'Value']
