@@ -1,332 +1,176 @@
-from beautifultable import BeautifulTable
-import sys
+from tkinter import *
+from tkinter.filedialog import askopenfilename,asksaveasfilename
 
-i = -1
-with open('test.txt') as file:
-    file_text = file.read()
-
-line_of_file = 1
-HAS_TO_READ = True
-last_type = 0
-is_spog = True
-
-lexems_out = []
-idn_out = []
-con_out = []
-znak = ['+', '-']
-rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}']
-lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
-             'cout', '{', '}', ',', '.', ':', '=', '<<',
-             '>>', '<', '>', '<=', '>=', '==', '!=', '+', '-', '*',
-             '(', ')', '/', '?', '\n']
-errors = ['unknown idn', 'unknown symbol', 'unallowed declaration', 'undeclarated variable', 're-declaration variable']
-
-table = BeautifulTable()
-table.column_headers = ['№', 'Row', 'Lex', 'Lex code', 'Code of IDN', 'Code of CONST']
-
-idn_table = BeautifulTable()
-idn_table.column_headers = ['Code', 'Name', 'Type', 'Value']
-
-con_table = BeautifulTable()
-con_table.column_headers = ['Code', 'Name', 'Type', 'Value']
+import lexan
+import synan
 
 
-def type_of_const(const):
-    if const.count('.') or const.count('e') or const.count('E'):
-        return 'float'
-    else:
-        return 'int'
+class Complier:
+    def __init__(self, root, file_name):
+        self.toolbar = Frame(root, bg="#AAAAAA")
+        self.top_frame = Frame(root, bg="#AACAAA")
+        self.bottom_frame = Frame(root, bg="#AADADA")
+        self.toolbar.pack(side=TOP, fill=X)
+        self.top_frame.pack(fill="both", expand=False, padx=30, pady=30)  # side =TOP)
+        self.bottom_frame.pack(side=BOTTOM, fill="both", expand=True, padx=10, pady=10)
+        # toolbar
+        self.open_file_button = Button(self.toolbar, text="Open file")
+        self.compile_button = Button(self.toolbar, text="Analyse")
+        self.save_button = Button(self.toolbar, text="Save to file")
+        self.open_file_button.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
+        self.compile_button.grid(row=0, column=2, padx=5, pady=5, ipadx=5, ipady=5)
+        self.save_button.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
 
+        self.text_area_top = Text(self.top_frame, font='Consolas 14', height=15, wrap=NONE)
+        # self.text_area_line_numbers = Text(self.top_frame,font='Consolas 14',width=2,height=15,wrap=NONE)
 
-def error(type_of_error, error_lex):
-    global line_of_file
-    if type_of_error in errors:
-        print("Error: {} in line {}, lex: {}".format(type_of_error, line_of_file, error_lex))
-        sys.exit()
-    else:
-        print('unknown error')
+        file = open(file_name, 'r')
+        text = file.readlines()
+        # num_lines = sum(1 for line in text)
+        # print(file.readlines())
+        # num_lines = sum(1 for i in file.readlines())
+        file.close()
+        self.text_area_top.insert(1.0, "".join(text))
+        # line_numbers = "\n".join(str(i) for i in range(1,num_lines+1))
+        # print(line_numbers)
+        # self.text_area_line_numbers.insert(1.0,line_numbers)
 
+        self.scrollbar_y_text_area_top = Scrollbar(self.top_frame)
+        self.scrollbar_y_text_area_top.pack(side='right', fill=Y)
+        self.scrollbar_y_text_area_top['command'] = self.text_area_top.yview
+        # self.scrollbar_y_text_area_top['command'] = self.on_top_scrollbar
+        # self.text_area_top['yscrollcommand'] = self.on_textscroll
+        self.text_area_top['yscrollcommand'] = self.scrollbar_y_text_area_top.set
 
-def next_char():
-    global i
-    i += 1
-    if i >= len(file_text):
-        return ''
-    else:
-        return file_text[i]
+        # self.scrollbar_y_text_area_top['command'] = self.text_area_line_numbers.yview
+        # self.text_area_line_numbers['yscrollcommand'] = self.on_textscroll
+        # self.text_area_line_numbers['yscrollcommand'] = self.scrollbar_y_text_area_top.set
 
+        self.scrollbar_x_text_area_top = Scrollbar(self.top_frame, orient="horizontal")
+        self.scrollbar_x_text_area_top.pack(side='bottom', fill=X)
+        self.scrollbar_x_text_area_top['command'] = self.text_area_top.xview
+        self.text_area_top['xscrollcommand'] = self.scrollbar_x_text_area_top.set
+        # self.text_area_line_numbers.pack(side=LEFT,fill=BOTH)#fill=X,side=LEFT)
+        # self.text_area_line_numbers.config(state=DISABLED)
+        # text_area_bottom.config(state=DISABLED)
+        self.text_area_top.pack(side=TOP, fill=BOTH)  # fill=X,side=LEFT)
 
-def prepare_to_write(array_from, table_to):
-    for line in array_from:
-        row = []
-        for k, v in line.items():
-            row.append(str(v))
-        table_to.append_row(row)
+        self.text_area_bottom = Text(self.bottom_frame, font='Consolas 14', height=15, wrap=CHAR)
+        self.scrollbar_y_text_area_bottom = Scrollbar(self.bottom_frame)
+        self.scrollbar_y_text_area_bottom.pack(side='right', fill=Y)
+        self.scrollbar_y_text_area_bottom['command'] = self.text_area_bottom.yview
+        self.text_area_bottom['yscrollcommand'] = self.scrollbar_y_text_area_bottom.set
+        self.text_area_bottom.pack(side=TOP, fill=BOTH)  # fill=X,side=LEFT)
 
+        # bind
+        self.open_file_button.bind("<1>", self.open_file_handler)
+        self.compile_button.bind("<1>", self.compile_handler)
+        self.save_button.bind("<1>", self.save_handler)
 
-def prepare_to_write_2(array_from):
-    str_to = ''
-    for line in array_from:
-        for k in line:
-            str_to += '{:10s}|'.format(str(k))
-        str_to += '\n' + '-' * (len(line) * 11) + '\n'
-        break
+        self.text_area_bottom.config(state=DISABLED)
 
-    for line in array_from:
-        for k, v in line.items():
-            str_to += '{:10s}|'.format(str(v))
-        str_to += '\n' + '-' * (len(line) * 11) + '\n'
+        # self.text_area_top.bind("<Any-KeyPress>",self.update_line_numbers)
 
-    return str_to
+    # def update_line_numbers(self,event):
+    #     line,_ = self.text_area_top.index('end').split('.')
+    #     line = int(line)
+    #     print(line)
+    #     line_numbers = "\n".join(str(i) for i in range(1,line))
+    #     self.text_area_line_numbers.config(state=NORMAL)
+    #     self.text_area_line_numbers.delete('1.0', END)
+    #     self.text_area_line_numbers.insert(1.0,line_numbers)
+    #     self.text_area_line_numbers.config(state=DISABLED)
 
+    # def on_top_scrollbar(self, *args):
+    #     '''Scrolls both text widgets when the scrollbar is moved'''
+    #     self.text_area_line_numbers.yview(*args)
+    #     self.text_area_top.yview(*args)
 
-def write_in_file():
-    beautiful_table = False
-    if beautiful_table:
-        prepare_to_write(lexems_out, table)
-        lex_table = open('lex.txt', 'w')
-        lex_table.write(str(table))
-        lex_table.close()
+    # def on_textscroll(self, *args):
+    #     '''Moves the scrollbar and scrolls text widgets when the mousewheel
+    #     is moved on a text widget'''
+    #     self.scrollbar_y_text_area_top.set(*args)
+    #     self.on_top_scrollbar('moveto', args[0])
 
-        prepare_to_write(idn_out, idn_table)
-        idn_t = open('idn.txt', 'w')
-        idn_t.write(str(idn_table))
-        idn_t.close()
+    def edit_bottom_textarea(method_to_decorate):
+        def wrapper(*args, **kwargs):
+            args[0].text_area_bottom.config(state=NORMAL)
+            # try:
+            method_to_decorate(*args, **kwargs)
+            # except Exception as ex:
+            # print(ex)
+            args[0].text_area_bottom.config(state=DISABLED)
 
-        prepare_to_write(con_out, con_table)
-        con_t = open('const.txt', 'w+')
-        con_t.write(str(con_table))
-        con_t.close()
-    else:
-        str_to_write = prepare_to_write_2(lexems_out)
-        lex_table = open('lex.txt', 'w')
-        lex_table.write(str(str_to_write))
-        lex_table.close()
+        return wrapper
 
-        str_to_write = prepare_to_write_2(idn_out)
-        idn_t = open('idn.txt', 'w')
-        idn_t.write(str(str_to_write))
-        idn_t.close()
+    @edit_bottom_textarea
+    def open_file_handler(self, event):
+        filename = askopenfilename(filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
+        try:
+            file = open(filename, 'r')
+            text = file.readlines()
+            # num_lines = sum(1 for line in text)
+            file.close()
 
-        str_to_write = prepare_to_write_2(con_out)
-        con_t = open('const.txt', 'w+')
-        con_t.write(str(str_to_write))
-        con_t.close()
+            # line_numbers = "\n".join(str(i) for i in range(1,num_lines+1))
 
-        sys.exit()
+            # self.text_area_line_numbers.config(state=NORMAL)
+            # self.text_area_line_numbers.delete('1.0', END)
+            # self.text_area_line_numbers.insert(1.0,line_numbers)
+            # self.text_area_line_numbers.config(state=DISABLED)
 
+            self.text_area_top.delete('1.0', END)
+            self.text_area_top.insert(1.0, "".join(text))
+        except UnicodeDecodeError as ex:
+            self.text_area_bottom.delete('1.0', END)
+            self.text_area_bottom.insert(1.0, "Wrong file format!")
 
-def add_lex(lex):
-    global last_type
-    global line_of_file
-    global is_spog
-    global lexems_out
-    global idn_out
-
-    if lex in lexems_in:
-        code = lexems_in.index(lex) + 1
-        idn_code = ''
-        con_code = ''
-
-        if lex == 'int' or lex == 'float':
-            if not is_spog:
-                error('unallowed declaration', lex)
-            last_type = lex
-        elif lex == '\n':
-            lex = '\\n'
-        elif lex == '{':
-            is_spog = False
-    elif lex[0].isalpha():
-        value = 0
-        code = 100
-        idn_code = len(idn_out) + 1
-        con_code = ''
-
-        for idn in idn_out:
-            if lex == idn['lex']:
-                idn_code = idn['idn_code']
-                if is_spog:
-                    error('re-declaration variable', lex)
-                break
+    @edit_bottom_textarea
+    def compile_handler(self, event):
+        self.text_area_bottom.delete('1.0', END)
+        text = self.text_area_top.get('1.0', END)
+        #print(text)
+        lexan.lexical_analyzer(text)
+        #print(lexan.lex_str)
+        # print(lexan.lexems_out[84])
+        if lexan.error_text:
+            text2 = lexan.error_text
         else:
-            if is_spog:
-                idn_out.append({'idn_code': idn_code, 'lex': lex, 'type': last_type, 'value': value})
-            else:
-                error('undeclarated variable', lex)
-    else:
-        code = 101
-        con_code = len(con_out) + 1
-        type_const = type_of_const(lex)
-        con_out.append({'code': con_code, 'name': lex, 'type': type_const,
-                        'value': float(lex) if type_const == 'float' else int(lex)})
-        idn_code = ''
+            text2 = 'Successfully\n'
+            text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
-    lexems_out.append({'number': len(lexems_out) + 1, 'line': line_of_file, 'lex': lex,
-                       'code': code, 'idn_code': idn_code, 'con_code': con_code})
+        self.text_area_bottom.insert(1.0, text2)
+
+        # lexer = LexicalAnalyzer(text)
+        # try:
+        #     (t_lexemes, t_idns, t_constants) = lexer.run()
+        #     sAn = SyntaxAnalyzer2(t_lexemes, t_idns, t_constants, transition_table.transition_table)
+        #     state_table = sAn.run()
+        #
+        #     if state_table == True:
+        #         state_table = None
+        #
+        #     text2 ="".join(tablesToString(t_lexemes,t_idns,t_constants))
+        #     text2 = "".join(makeTables(t_lexemes, t_idns, t_constants, state_table))
+        #     self.text_area_bottom.insert(1.0, text2)
+        # except TranslatorException as ex:
+        #     self.text_area_bottom.insert(1.0, ex.__class__.__name__ + "\n" + str(ex))
+
+    @edit_bottom_textarea
+    def save_handler(self, event):
+        filename = asksaveasfilename(filetypes=(("txt files", "*.txt"), ("all files", "*.*")))
+        file = open(filename, 'w')
+        file.write(self.text_area_top.get(1.0, END))
+        file.close()
+        # self.text_area_top.delete('1.0', END)
+        # self.text_area_top.insert(1.0,text)
 
 
-state = 1
+if __name__ == "__main__":
+    FILE_NAME = 'test.txt'
+    root = Tk()
+    gui = Complier(root, FILE_NAME)
+    root.state('zoomed')
+    root.mainloop()
 
-while True:
-    if state == 1:
-        if HAS_TO_READ:
-            ch = next_char()
-        while ch == ' ' or ch == '\n' or ch == '\t':
-            if ch == '\n':
-                add_lex('\n')
-                line_of_file += + 1
-            ch = next_char()
-        lex = ''
-        if ch.isalpha():
-            lex += ch
-            ch = next_char()
-            state = 2
-        elif ch.isdigit():
-            lex += ch
-            ch = next_char()
-            state = 3
-        elif ch == '.':
-            lex += ch
-            ch = next_char()
-            state = 4
-        elif ch in znak:
-            lex = ch
-            add_lex(lex)
-            HAS_TO_READ = True
-            state = 1
-        elif ch == '>':
-            lex += ch
-            ch = next_char()
-            state = 9
-        elif ch == '<':
-            lex += ch
-            ch = next_char()
-            state = 10
-        elif ch == '=':
-            lex += ch
-            ch = next_char()
-            state = 11
-        elif ch == '!':
-            lex += ch
-            ch = next_char()
-            state = 12
-        elif ch in rozdilniki:
-            lex += ch
-            HAS_TO_READ = True
-            add_lex(lex)
-            state = 1
-        else:
-            if ch == '':
-                write_in_file()
-            else:
-                error('unknown symbol', ch)
-    elif state == 2:
-        if ch.isdigit() or ch.isalpha():
-            state = 2
-            lex += ch
-            ch = next_char()
-        else:
-            add_lex(lex)
-            HAS_TO_READ = False
-            state = 1
-    elif state == 3:
-        if ch.isdigit():
-            state = 3
-            lex += ch
-            ch = next_char()
-        elif ch == '.':
-            state = 5
-            lex += ch
-            ch = next_char()
-        elif ch == 'e' or ch == 'E':
-            state = 6
-            lex += ch
-            ch = next_char()
-        else:
-            add_lex(lex)
-            HAS_TO_READ = False
-            state = 1
-    elif state == 4:
-        if ch.isdigit():
-            state = 5
-            lex += ch
-            ch = next_char()
-        else:
-            error('unknown idn', lex)
-    elif state == 5:
-        if ch.isdigit():
-            state = 5
-            lex += ch
-            ch = next_char()
-        elif ch == 'e' or ch == 'E':
-            state = 6
-            lex += ch
-            ch = next_char()
-        else:
-            add_lex(lex)
-            HAS_TO_READ = False
-            state = 1
-    elif state == 6:
-        if ch.isdigit():
-            state = 8
-            lex += ch
-            ch = next_char()
-        elif ch in znak:
-            state = 7
-            lex += ch
-            ch = next_char()
-        else:
-            error('unknown idn', lex)
-    elif state == 7:
-        if ch.isdigit():
-            state = 8
-            lex += ch
-            ch = next_char()
-        else:
-            lex += ch
-            error('unknown idn', lex)
-    elif state == 8:
-        if ch.isdigit():
-            state = 8
-            lex += ch
-            ch = next_char()
-        else:
-            state = 1
-            add_lex(lex)
-            HAS_TO_READ = False
-    elif state == 9:
-        HAS_TO_READ = True
-        if ch == '>':
-            lex += ch
-        elif ch == '=':
-            lex += ch
-        else:
-            HAS_TO_READ = False
-        add_lex(lex)
-        state = 1
-    elif state == 10:
-        HAS_TO_READ = True
-        if ch == '<':
-            lex += ch
-        elif ch == '=':
-            lex += ch
-        else:
-            HAS_TO_READ = False
-        add_lex(lex)
-        state = 1
-    elif state == 11:
-        HAS_TO_READ = True
-        if ch == '=':
-            lex += ch
-        else:
-            HAS_TO_READ = False
-        add_lex(lex)
-        state = 1
-    elif state == 12:
-        HAS_TO_READ = True
-        if ch == '=':
-            lex += ch
-        else:
-            HAS_TO_READ = False
-        add_lex(lex)
-        state = 1
+
