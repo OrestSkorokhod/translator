@@ -52,7 +52,7 @@ def error(type_of_error, error_lex=''):
     global EOF
     EOF = True
 
-    error_text = 'unknown error'
+    #error_text = 'unknown error'
 
 
 def next_char():
@@ -208,6 +208,8 @@ def lexical_analyzer(text_in):
                     line_of_file += + 1
                 ch = next_char()
             lex = ''
+            if ch == '{':
+                print('kek')
             if ch.isalpha():
                 lex += ch
                 ch = next_char()
@@ -357,7 +359,9 @@ def lexical_analyzer(text_in):
             HAS_TO_READ = True
             if ch == '=':
                 lex += ch
+                add_lex(lex)
             else:
                 HAS_TO_READ = False
-            add_lex(lex)
+                error('unknown lex', lex)
+
             state = 1
