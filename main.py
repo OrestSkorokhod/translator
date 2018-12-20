@@ -129,32 +129,23 @@ class Complier:
     def compile_handler(self, event):
         self.text_area_bottom.delete('1.0', END)
         text = self.text_area_top.get('1.0', END)
-        #print(text)
+
         lexan.lexical_analyzer(text)
-        #print(lexan.lex_str)
-        # print(lexan.lexems_out[84])
+
         if lexan.error_text:
             text2 = lexan.error_text
         else:
-            text2 = 'Successfully\n'
-            text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
+            SynAn = synan.SyntaxAnalyser()
+            SynAn.prog()
+            if lexan.error_text:
+                text2 = lexan.error_text
+            else:
+                text2 = 'Successfully\n'
+                text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
         self.text_area_bottom.insert(1.0, text2)
 
-        # lexer = LexicalAnalyzer(text)
-        # try:
-        #     (t_lexemes, t_idns, t_constants) = lexer.run()
-        #     sAn = SyntaxAnalyzer2(t_lexemes, t_idns, t_constants, transition_table.transition_table)
-        #     state_table = sAn.run()
-        #
-        #     if state_table == True:
-        #         state_table = None
-        #
-        #     text2 ="".join(tablesToString(t_lexemes,t_idns,t_constants))
-        #     text2 = "".join(makeTables(t_lexemes, t_idns, t_constants, state_table))
-        #     self.text_area_bottom.insert(1.0, text2)
-        # except TranslatorException as ex:
-        #     self.text_area_bottom.insert(1.0, ex.__class__.__name__ + "\n" + str(ex))
+
 
     @edit_bottom_textarea
     def save_handler(self, event):

@@ -22,7 +22,7 @@ rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}']
 lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
              'cout', '{', '}', ',', '.', ':', '=', '<<',
              '>>', '<', '>', '<=', '>=', '==', '!=', '+', '-', '*',
-             '(', ')', '/', '?', '\n']
+             '(', ')', '/', '?', '\n', 'or', 'and', '!']
 errors = ['unknown idn', 'unknown symbol', 'unallowed declaration', 'undeclarated variable', 're-declaration variable']
 
 table = BeautifulTable()
@@ -46,9 +46,9 @@ def error(type_of_error, error_lex=''):
     global line_of_file
     global error_text
     if error_lex == '':
-        error_text = ''
+        error_text = 'jgfkjgfj'
     else:
-        error_text = "Error: {} in line {}, lex: {}".format(type_of_error, line_of_file, error_lex)
+        error_text = "Lexical Error: {} in line {}, lex: {}".format(type_of_error, line_of_file, error_lex)
     global EOF
     EOF = True
 
@@ -194,7 +194,7 @@ def lexical_analyzer(text_in):
     i = -1
     last_type = 0
     is_spog = True
-    line_of_file = 0
+    line_of_file = 1
     EOF = False
     state = 1
 
@@ -208,8 +208,6 @@ def lexical_analyzer(text_in):
                     line_of_file += + 1
                 ch = next_char()
             lex = ''
-            if ch == '{':
-                print('kek')
             if ch.isalpha():
                 lex += ch
                 ch = next_char()
@@ -275,6 +273,9 @@ def lexical_analyzer(text_in):
                 state = 6
                 lex += ch
                 ch = next_char()
+            elif ch.isalpha():
+                lex += ch
+                error('unknown lex', lex)
             else:
                 add_lex(lex)
                 HAS_TO_READ = False
@@ -362,6 +363,5 @@ def lexical_analyzer(text_in):
                 add_lex(lex)
             else:
                 HAS_TO_READ = False
-                error('unknown lex', lex)
-
+                add_lex(lex)
             state = 1

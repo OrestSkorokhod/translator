@@ -1,19 +1,12 @@
 float a, i
-int b, c,
+int b, c
 {
-.3e-2
--1..111+1111.1-1111e-1
-a = 6
-	a = 1.1
-	b = 3
-	cin >> c
-	while a > c do
-	{
-		b = 4 * i - c
-		a = b / a
-		cout << b << a
-		if(a >= c)
-			cout << c
-	}
+a = b / a
+cout << b << a
 }
+
+
+
+
+
 
