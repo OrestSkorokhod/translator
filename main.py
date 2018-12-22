@@ -26,6 +26,7 @@ class Complier:
 
         file = open(file_name, 'r')
         text = file.readlines()
+        self.name_of_file = file_name
         # num_lines = sum(1 for line in text)
         # print(file.readlines())
         # num_lines = sum(1 for i in file.readlines())
@@ -69,29 +70,6 @@ class Complier:
 
         self.text_area_bottom.config(state=DISABLED)
 
-        # self.text_area_top.bind("<Any-KeyPress>",self.update_line_numbers)
-
-    # def update_line_numbers(self,event):
-    #     line,_ = self.text_area_top.index('end').split('.')
-    #     line = int(line)
-    #     print(line)
-    #     line_numbers = "\n".join(str(i) for i in range(1,line))
-    #     self.text_area_line_numbers.config(state=NORMAL)
-    #     self.text_area_line_numbers.delete('1.0', END)
-    #     self.text_area_line_numbers.insert(1.0,line_numbers)
-    #     self.text_area_line_numbers.config(state=DISABLED)
-
-    # def on_top_scrollbar(self, *args):
-    #     '''Scrolls both text widgets when the scrollbar is moved'''
-    #     self.text_area_line_numbers.yview(*args)
-    #     self.text_area_top.yview(*args)
-
-    # def on_textscroll(self, *args):
-    #     '''Moves the scrollbar and scrolls text widgets when the mousewheel
-    #     is moved on a text widget'''
-    #     self.scrollbar_y_text_area_top.set(*args)
-    #     self.on_top_scrollbar('moveto', args[0])
-
     def edit_bottom_textarea(method_to_decorate):
         def wrapper(*args, **kwargs):
             args[0].text_area_bottom.config(state=NORMAL)
@@ -129,19 +107,33 @@ class Complier:
     def compile_handler(self, event):
         self.text_area_bottom.delete('1.0', END)
         text = self.text_area_top.get('1.0', END)
+        traceback = True
+        text2 = ''
+
+        file = open(self.name_of_file, 'w')
+        file.write(self.text_area_top.get(1.0, END))
+        file.close()
 
         lexan.lexical_analyzer(text)
-
         if lexan.error_text:
-            text2 = lexan.error_text
+            if traceback:
+                for error in lexan.error_text:
+                    text2 += error
+            else:
+                text2 = lexan.error_text[0]
         else:
             SynAn = synan.SyntaxAnalyser()
             SynAn.prog()
             if lexan.error_text:
-                text2 = lexan.error_text
+                if traceback:
+                    for error in lexan.error_text:
+                        text2 += error + '\n'
+                else:
+                    text2 = lexan.error_text[0]
             else:
                 text2 = 'Successfully\n'
                 text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
+
 
         self.text_area_bottom.insert(1.0, text2)
 

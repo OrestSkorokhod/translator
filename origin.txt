@@ -8,8 +8,9 @@ cout << a << a
 b=a
 c=b
 }
-while a==c and !(b!=a) or (a==b or a>b) and (a==(a*1/(25*45.4e-2))) do {
+while a==c do {
 c =i
 } 
 a = b
 }
+

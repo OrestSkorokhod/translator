@@ -5,7 +5,7 @@ i = -1
 #with open('test.txt') as file:
     #file_text = file.read()
 text = ''
-error_text = ''
+error_text = []
 line_of_file = 1
 HAS_TO_READ = True
 last_type = 0
@@ -18,7 +18,7 @@ con_str = ''
 idn_out = []
 con_out = []
 znak = ['+', '-']
-rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}']
+rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}', ':']
 lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
              'cout', '{', '}', ',', '.', ':', '=', '<<',
              '>>', '<', '>', '<=', '>=', '==', '!=', '+', '-', '*',
@@ -46,9 +46,9 @@ def error(type_of_error, error_lex=''):
     global line_of_file
     global error_text
     if error_lex == '':
-        error_text = 'jgfkjgfj'
+        error_text.append('jgfkjgfj')
     else:
-        error_text = "Lexical Error: {} in line {}, lex: {}".format(type_of_error, line_of_file, error_lex)
+        error_text.append("Lexical Error: {} in line {}, lex: {}".format(type_of_error, line_of_file, error_lex))
     global EOF
     EOF = True
 
@@ -108,7 +108,7 @@ def write_in_file():
         con_t.close()
     else:
         lex_str = ''
-        lex_str = prepare_to_write_2(lexems_out)
+        lex_str = prepare_to_write_2(lexems_out[:-1])
         lex_table = open('lex.txt', 'w')
         lex_table.write(str(lex_str))
         lex_table.close()
@@ -190,7 +190,7 @@ def lexical_analyzer(text_in):
     global line_of_file
     global EOF
     global i, last_type, is_spog
-    error_text = ''
+    error_text = []
     i = -1
     last_type = 0
     is_spog = True

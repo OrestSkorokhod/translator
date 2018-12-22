@@ -2,14 +2,18 @@ float a, d
 int b, i,c
 {
 if a <= (b / a)*a+i/(b+(a*i)) ? {
-a = 3.4545e-5
+a = 3.8e-3
 cout << a << a
 }:{
 b=a
 c=b
 }
-while a==c and !(b!=a) or (a==b or a>b) and (a==(a*1/(25*45.4e-2))) do {
+while (b==c) do {
+cin>> b>> c>> a
 c =i
 } 
 a = b
 }
+
+
+
