@@ -171,8 +171,15 @@ def add_lex(lex):
         code = 101
         con_code = len(con_out) + 1
         type_const = type_of_const(lex)
-        con_out.append({'code': con_code, 'name': lex, 'type': type_const,
-                        'value': float(lex) if type_const == 'float' else int(lex)})
+        if len(con_out) == 0:
+            con_out.append({'code': con_code, 'name': lex, 'type': type_const,
+                            'value': float(lex) if type_const == 'float' else int(lex)})
+        for con in con_out:
+            if lex == con['name']:
+                break
+        else:
+            con_out.append({'code': con_code, 'name': lex, 'type': type_const,
+                                'value': float(lex) if type_const == 'float' else int(lex)})
         idn_code = ''
 
     lexems_out.append({'number': len(lexems_out) + 1, 'line': line_of_file, 'lex': lex,

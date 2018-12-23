@@ -45,7 +45,7 @@ class SyntaxAnalyser:
             return False
 
     def log_f(self):
-        print(lexan.lexems_out[self.i]['lex'])
+        # print(lexan.lexems_out[self.i]['lex'])
         if lexan.lexems_out[self.i]['lex'] == '(':
             self.i += 1
             if self.log_e():
@@ -231,6 +231,7 @@ class SyntaxAnalyser:
                 if self.id_():
                     pass
                 else:
+                    # self.syntax_error('missing >> or end of line')
                     return False
             return True
 
@@ -372,7 +373,10 @@ class SyntaxAnalyser:
                     return True
                 if self.og():
                     pass
+                elif lexan.lexems_out[self.i]['lex'] == '{':
+                    return True
                 else:
+                    self.syntax_error('missing declaration or end of declaration list')
                     return False
 
         else:

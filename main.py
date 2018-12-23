@@ -121,16 +121,17 @@ class Complier:
                     text2 += error
             else:
                 text2 = lexan.error_text[0]
+        # else:
+        #     SynAn = synan.SyntaxAnalyser()
+        #     SynAn.prog()
+        #     if lexan.error_text:
+        #         if traceback:
+        #             for error in lexan.error_text:
+        #                 text2 += error + '\n'
+        #         else:
+        #             text2 = lexan.error_text[0]
+        #     else:
         else:
-            SynAn = synan.SyntaxAnalyser()
-            SynAn.prog()
-            if lexan.error_text:
-                if traceback:
-                    for error in lexan.error_text:
-                        text2 += error + '\n'
-                else:
-                    text2 = lexan.error_text[0]
-            else:
                 text2 = 'Successfully\n'
                 text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
