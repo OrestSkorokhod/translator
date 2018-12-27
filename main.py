@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename,asksaveasfilename
-
-from tkintertable.Tables import TableCanvas
-from tkintertable.TableModels import TableModel
+#
+# from tkintertable.Tables import TableCanvas
+# from tkintertable.TableModels import TableModel
 import lexan
 import synan
 import  mpa
@@ -231,11 +231,11 @@ class Complier:
             else:
                 text2 = lexan.error_text[0]
         else:
-            # SynAn = synan.SyntaxAnalyser()
-            # SynAn.prog()
-            SynAn = mpa.MPA()
-            SynAn.automat()
-            self.an_table = SynAn.make_table()
+            SynAn = synan.SyntaxAnalyser()
+            SynAn.prog()
+            # SynAn = mpa.MPA()
+            # SynAn.automat()
+            # self.an_table = SynAn.make_table()
 
             if lexan.error_text:
                 if traceback:

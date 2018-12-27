@@ -108,6 +108,7 @@ class MPA:
                         self.state = self.stack.pop()
                         self.i -= 1
                     else:
+                        self.is_end = True
                         break
                 else:
                     # print(row)

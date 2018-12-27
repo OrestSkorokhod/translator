@@ -139,7 +139,7 @@ class Relation:
             firsts = self.first_plus(word2)
             for one in firsts:
                 # print(word1, one)
-                if self.r_table[word1][one] == 'o    ' or self.r_table[word1][one] == '=' or self.r_table[word1][one] == '<':
+                if self.r_table[word1][one] == 'o    ' or self.r_table[word1][one] == '<':
                     self.r_table[word1][one] = '<'
                 else:
                     self.count_of_conflicts += 1
@@ -152,7 +152,7 @@ class Relation:
             if word2 in self.terminals:
                 for one in lasts:
                     # print(one, word2)
-                    if self.r_table[one][word2] == 'o    ' or self.r_table[one][word2] == '=' or self.r_table[one][word2] == '>':
+                    if self.r_table[one][word2] == 'o    ' or self.r_table[one][word2] == '>':
                         self.r_table[one][word2] = '>'
                     else:
                         self.count_of_conflicts += 1
@@ -162,7 +162,7 @@ class Relation:
                 for one in lasts:
                     for one_f in firsts:
                         # print('kek')
-                        if self.r_table[one][one_f] == 'o    ' or self.r_table[one][one_f] == '=' or self.r_table[one][one_f] == '>':
+                        if self.r_table[one][one_f] == 'o    ' or self.r_table[one][one_f] == '>':
                             self.r_table[one][one_f] = '>'
                         else:
                             self.count_of_conflicts += 1
