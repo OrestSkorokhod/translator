@@ -1,12 +1,25 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename,asksaveasfilename
 
+from tkintertable.Tables import TableCanvas
+from tkintertable.TableModels import TableModel
 import lexan
 import synan
+import  mpa
+import  relation
+
+
+# class AnalysisTable:
+#
+#     def __init__(self):
+#         window = tkinter.Toplevel(root)
+
 
 
 class Complier:
     def __init__(self, root, file_name):
+        self.an_table = ''
+        self.rel_table = ''
         self.toolbar = Frame(root, bg="#AAAAAA")
         self.top_frame = Frame(root, bg="#AACAAA")
         self.bottom_frame = Frame(root, bg="#AADADA")
@@ -15,11 +28,27 @@ class Complier:
         self.bottom_frame.pack(side=BOTTOM, fill="both", expand=True, padx=10, pady=10)
         # toolbar
         self.open_file_button = Button(self.toolbar, text="Open file")
-        self.compile_button = Button(self.toolbar, text="Analyse")
         self.save_button = Button(self.toolbar, text="Save to file")
+        self.compile_button = Button(self.toolbar, text="Analyse")
+
+        self.lex_but = Button(self.toolbar, text="Lexemes table")
+        self.idn_but = Button(self.toolbar, text="IDN table")
+        self.con_but = Button(self.toolbar, text="CON table")
+
+        self.rozbir_button = Button(self.toolbar, text="Analysis table")
+        self.relation_button = Button(self.toolbar, text="Relation table")
+
         self.open_file_button.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
-        self.compile_button.grid(row=0, column=2, padx=5, pady=5, ipadx=5, ipady=5)
         self.save_button.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
+        self.compile_button.grid(row=0, column=2, padx=5, pady=5, ipadx=5, ipady=5)
+
+        self.lex_but.grid(row=0, column=3, padx=5, pady=5, ipadx=5, ipady=5)
+        self.idn_but.grid(row=0, column=4, padx=5, pady=5, ipadx=5, ipady=5)
+        self.con_but.grid(row=0, column=5, padx=5, pady=5, ipadx=5, ipady=5)
+
+        self.rozbir_button.grid(row=0, column=6, padx=5, pady=5, ipadx=5, ipady=5)
+        self.relation_button.grid(row=0, column=7, padx=5, pady=5, ipadx=5, ipady=5)
+
 
         self.text_area_top = Text(self.top_frame, font='Consolas 14', height=15, wrap=NONE)
         # self.text_area_line_numbers = Text(self.top_frame,font='Consolas 14',width=2,height=15,wrap=NONE)
@@ -68,6 +97,13 @@ class Complier:
         self.compile_button.bind("<1>", self.compile_handler)
         self.save_button.bind("<1>", self.save_handler)
 
+        self.lex_but.bind("<1>", self.lex_table_handler)
+        self.idn_but.bind("<1>", self.idn_table_handler)
+        self.con_but.bind("<1>", self.con_table_handler)
+
+        self.rozbir_button.bind("<1>", self.rozbir_table_handler)
+        self.relation_button.bind("<1>", self.relation_table_handler)
+
         self.text_area_bottom.config(state=DISABLED)
 
     def edit_bottom_textarea(method_to_decorate):
@@ -80,6 +116,79 @@ class Complier:
             args[0].text_area_bottom.config(state=DISABLED)
 
         return wrapper
+
+    @edit_bottom_textarea
+    def relation_table_handler(self, event):
+
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("Relation table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, self.rel_table)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
+    @edit_bottom_textarea
+    def rozbir_table_handler(self, event):
+
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("Analysis table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, self.an_table)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
+    @edit_bottom_textarea
+    def lex_table_handler(self, event):
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("Lexemes Table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, lexan.lex_str)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
+    @edit_bottom_textarea
+    def idn_table_handler(self, event):
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("IDN table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, lexan.idn_str)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
+    @edit_bottom_textarea
+    def con_table_handler(self, event):
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title('CON table')
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, lexan.con_str)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
 
     @edit_bottom_textarea
     def open_file_handler(self, event):
@@ -121,21 +230,27 @@ class Complier:
                     text2 += error
             else:
                 text2 = lexan.error_text[0]
-        # else:
-        #     SynAn = synan.SyntaxAnalyser()
-        #     SynAn.prog()
-        #     if lexan.error_text:
-        #         if traceback:
-        #             for error in lexan.error_text:
-        #                 text2 += error + '\n'
-        #         else:
-        #             text2 = lexan.error_text[0]
-        #     else:
         else:
+            # SynAn = synan.SyntaxAnalyser()
+            # SynAn.prog()
+            SynAn = mpa.MPA()
+            SynAn.automat()
+            self.an_table = SynAn.make_table()
+
+            if lexan.error_text:
+                if traceback:
+                    for error in lexan.error_text:
+                        text2 += error + '\n'
+                else:
+                    text2 = lexan.error_text[0]
+            else:
                 text2 = 'Successfully\n'
-                text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
+                # text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
-
+        # machine = mpa.MPA()
+        rel = relation.Relation()
+        self.rel_table = rel.make_table()
+        # print(self.rel_table)
         self.text_area_bottom.insert(1.0, text2)
 
 

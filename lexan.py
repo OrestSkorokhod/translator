@@ -17,6 +17,7 @@ lex_str = ''
 con_str = ''
 idn_out = []
 con_out = []
+is_og = False
 znak = ['+', '-']
 rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}', ':']
 lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
@@ -136,6 +137,7 @@ def add_lex(lex):
     global is_spog
     global lexems_out
     global idn_out
+    global is_og
 
     if lex in lexems_in:
         code = lexems_in.index(lex) + 1
@@ -143,11 +145,15 @@ def add_lex(lex):
         con_code = ''
 
         if lex == 'int' or lex == 'float':
+            is_og = True
             if not is_spog:
                 error('unallowed declaration', lex)
-            last_type = lex
+            else:
+                if is_og:
+                    last_type = lex
         elif lex == '\n':
             lex = '\\n'
+            is_og = False
         elif lex == '{':
             is_spog = False
     elif lex[0].isalpha():
@@ -159,7 +165,7 @@ def add_lex(lex):
         for idn in idn_out:
             if lex == idn['lex']:
                 idn_code = idn['idn_code']
-                if is_spog:
+                if is_spog and is_og:
                     error('re-declaration variable', lex)
                 break
         else:

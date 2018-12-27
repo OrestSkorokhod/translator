@@ -1,16 +1,66 @@
 float a, d
-int b, i,c
-{1..1 111.111-111.111.111
-if a <= (b / a)*a+i/(b+(a*i)) ? {
-a = 3.4545e-5
-cout << a << a
+int b, i,c, k
+{
+if -a <= (b + a)*a+i/(b+(a*i)) ? {
+cout<<b
+cout<<a
 }:{
-b=a
-c=b
+cin >> a >> k
+cout<<k
 }
-while a==c and !(b!=a) or !!!(a==b or a>b) and (a/b>=(a*1/(25*45.4e-2))) do {
+b=a
+c=a
+while a<=c and !(b!=a) or !!(a==b or a>b) and (a/b>=(a*1/(25*45.4e-2))) do {
 c =i
 }
 cin>>b>>c
 a = b
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
