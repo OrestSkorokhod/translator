@@ -44,24 +44,27 @@ class MPA:
             '17': [['=', 18, 25, 'error']],
             '18': [['', '', '', 'exit']],
             '19': [['>>', '', 20, 'error']],
-            '20': [['id', '', 21, 'exit']],
+            '20': [['id', '', 21, 'error']],
             '21': [['>>', '', 20, 'exit']],
             '22': [['<<', '', 23, 'error']],
             '23': [['id', '', 24, 'error']],
             '24': [['<<', '', 23, 'exit']],
-            '25': [['+', '', 251, '251', ''],
-                   ['-', '', 251, '251', '']],
-            '251': [['id', '', 26, 'error'],
-                   ['con', '', 26, 'error'],
+            '25': [['+', '', 26, 'error', ''],
+                   ['-', '', 26, 'error', ''],
+                   ['(', 27, 25, 'error', ''],
+                   ['id', '', 271, 'error', ''],
+                   ['con', '', 271, 'error', '']],
+            '26': [['id', '', 271, 'error'],
+                   ['con', '', 271, 'error'],
                    ['(', 27, 25, 'error']],
-            '26': [['+', '', 25, 'exit'],
-                   ['-', '', 25, 'exit'],
-                   ['*', '', 25, 'exit'],
-                   ['/', '', 25, 'exit']],
-            '27': [[')', '', 26, 'error']],
-            '28': [['!', '', 281, self.exp, 29],
+            '27': [[')', '', 271, 'error']],
+            '271': [['+', '', 25, 'exit'],
+                    ['-', '', 25, 'exit'],
+                    ['*', '', 26, 'exit'],
+                    ['/', '', 26, 'exit']],
+            '28': [['!', '', 28, self.exp, 29],
                    ['(', 30, 28, self.exp, 29]],
-            '281': [['', '', '', '28', '']],
+            # '281': [['', '', '', '28', '']],
             '29': [['<', 31, 25, 'error'],
                    ['>', 31, 25, 'error'],
                    ['<=', 31, 25, 'error'],
@@ -74,7 +77,10 @@ class MPA:
         }
 
     def error(self, message = ''):
-        lexan.error_text.append('Syntax error in line {}'.format(self.lexemes[self.i]['line']))
+        if len(self.lexemes) <= self.i:
+            lexan.error_text.append('Syntax error in line {}'.format(self.lexemes[self.i - 1]['line']))
+        else:
+            lexan.error_text.append('Syntax error in line {}'.format(self.lexemes[self.i]['line']))
         # synan.SyntaxAnalyser.syntax_error(message)
 
     def automat(self):
@@ -83,7 +89,7 @@ class MPA:
             lex_row = self.lexemes[self.i]
             self.i += 1
             lex = lex_row['lex']
-            # if lex == 'while':
+            # if lex == '{':
             #     print('kek')
             non_equal = ''
             self.analys_table.append([lex, [*self.stack], self.state])
@@ -130,9 +136,7 @@ class MPA:
                     elif non_equal == '28':
                         self.state = 28
                         self.i -= 1
-                    elif non_equal == '251':
-                        self.state = 251
-                        self.i -= 1
+
 
     def make_table(self):
         str_to = '{:30s}|{:30s}|{:30s}|\n'.format('lexem', 'stack', 'state')

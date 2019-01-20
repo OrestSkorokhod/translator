@@ -3,27 +3,88 @@
 class Relation:
 
     def __init__(self):
+        # self.grammar = {'<program>': [['<declaration list>', '<operators block>']],
+        #                 '<declaration list>': [['<declaration>'], ['<declaration list>', '<declaration>']],
+        #                 '<declaration>': [['<type>', '<variables list>', '\\n']],
+        #                 '<type>': [['int'], ['float']],
+        #                 '<variables list>': [['id'], ['id', '<variables list>']],
+        #                 '<operators list>': [['<operator>', '\\n'], ['<operators list>', '<operator>', '\\n']],
+        #                 '<operators block>': [['{', '\\n', '<operators list>', '}']],
+        #                 '<operator>': [['<loop>'], ['<condition>'], ['<assigning>'], ['<input>'], ['<output>']],
+        #                 '<loop>': [['while', '<LE>', 'do', '<operators block>']],
+        #                 '<condition>': [['if', '<LE>', '?', '<operators block>']],
+        #                 '<assigning>': [['id', '=', '<E>']],
+        #                 '<input>': [['cin', '>>', 'id'], ['<input>', '>>', 'id']],
+        #                 '<output>': [['cout', '<<', 'id'], ['<output>', '<<', 'id']],
+        #                 '<E>': [['<E>', '+', '<T>'], ['<E>', '-', '<T>'], ['<T>']],
+        #                 '<T>': [['<T>', '*', '<F>'], ['<T>', '/', '<F>'], ['<sign>', '<F>']],
+        #                 '<F>': [['id'], ['con'], ['(', '<E>', ')']],
+        #                 '<sign>': [['-'], ['+']],
+        #                 '<LE>': [['<LT>'], ['<LE>', 'or', '<LT>']],
+        #                 '<LT>': [['<LF>'], ['<LF>', 'and', '<LT>']],
+        #                 '<LF>': [['<R>'], ['(', '<LE>', ')'], ['!', '<LF>']],
+        #                 '<R>': [['<E>', '<LS>', '<E>']],
+        #                 '<LS>': [['<'], ['>'], ['<='], ['>='], ['!='], ['==']]
+        #                 }
         self.grammar = {'<program>': [['<declaration list>', '<operators block>']],
-                        '<declaration list>': [['<declaration>'], ['<declaration list>', '<declaration>']],
-                        '<declaration>': [['<type>', '<variables list>', '\\n']],
+
+                        # '<declaration list1>': [['declaration list']],
+                        '<declaration list>': [['<declaration1>', '\\n'], ['<declaration list>', '<declaration1>', '\\n']],
+
+                        '<declaration1>': [['<declaration>']],
+                        '<declaration>': [['<type>', 'id'], ['<declaration>', ',', 'id']],
+
+
                         '<type>': [['int'], ['float']],
-                        '<variables list>': [['id'], ['id', '<variables list>']],
-                        '<operators list>': [['<operator>', '\\n'], ['<operators list>', '<operator>', '\\n']],
-                        '<operators block>': [['{', '\\n', '<operators list>', '}']],
+
+                        # '<operators block1>': [['<operators block>']],
+                        '<operators block>': [['{', '<operators list1>', '}']],
+
+                        '<operators list1>': [['<operators list>']],
+                        '<operators list>': [['<operator1>', '\\n'], ['<operators list>', '<operator1>', '\\n']],
+
+
+
+                        '<operator1>': [['<operator>']],
                         '<operator>': [['<loop>'], ['<condition>'], ['<assigning>'], ['<input>'], ['<output>']],
-                        '<loop>': [['while', '<LE>', 'do', '<operators block>']],
-                        '<condition>': [['if', '<LE>', '?', '<operators block>']],
-                        '<assigning>': [['id', '=', '<E>']],
+
+                        # '<N>': [['\\n']],
+
+
+                        # '<loop1>': [['<loop>']],
+                        '<loop>': [['while', '<LE1>', 'do', '<operators block>']],
+                        # '<condition1>': [['<condition>']],
+                        '<condition>': [['if', '<LE1>', '?', '<operators block>']],
+                        '<assigning>': [['id', '=', '<E1>']],
                         '<input>': [['cin', '>>', 'id'], ['<input>', '>>', 'id']],
                         '<output>': [['cout', '<<', 'id'], ['<output>', '<<', 'id']],
-                        '<E>': [['<E>', '+', '<T>'], ['<E>', '-', '<T>'], ['<T>']],
-                        '<T>': [['<T>', '*', '<F>'], ['<T>', '/', '<F>'], ['<sign>', '<F>']],
-                        '<F>': [['id'], ['con'], ['(', '<E>', ')']],
-                        '<sign>': [['-'], ['+'],],
-                        '<LE>': [['<LT>'], ['<LE>', 'or', '<LT>']],
-                        '<LT>': [['<LF>'], ['<LF>', 'and', '<LT>']],
-                        '<LF>': [['<R>'], ['(', '<LE>', ')'], ['!', '<LF>']],
-                        '<R>': [['<E>', '<LS>', '<E>']],
+
+
+                        '<E1>': [['<E>']],
+                        '<E>': [['<E>', '+', '<T1>'],
+                                ['<E>', '-', '<T1>'],
+                                ['<T1>']],
+
+                        '<T1>': [['<T>']],
+                        '<T>': [['<T>', '*', '<F1>'], ['<T>', '/', '<F1>'], ['<sign1>', '<F1>']],
+
+                        '<F1>': [['<F>']],
+                        '<F>': [['id'], ['con'], ['(', '<E1>', ')']],
+
+                        '<sign1>': [['<sign>']],
+                        '<sign>': [['-'], ['+']],
+
+                        '<LE1>': [['<LE>']],
+                        '<LE>': [['<LT1>'], ['<LE>', 'or', '<LT1>']],
+
+                        '<LT1>': [['<LT>']],
+                        '<LT>': [['<LF1>'], ['<LT>', 'and', '<LF1>']],
+
+                        '<LF1>': [['<LF>']],
+                        '<LF>': [['[', '<R>', ']'], ['(', '<LE1>', ')'], ['!', '<LF>']],
+                        '<R>': [['<E1>', '<LS1>', '<E1>']],
+
+                        '<LS1>': [['<LS>']],
                         '<LS>': [['<'], ['>'], ['<='], ['>='], ['!='], ['==']]
                         }
         # self.grammar = {'<Z>': [['b', '<M>', 'b']],
@@ -92,7 +153,7 @@ class Relation:
         return first_set
 
     def set_relation(self):
-        rozdilnik = 'o'
+        rozdilnik = '.'
         for word in self.not_terminals:
             self.r_table[word] = dict()
             for word2 in self.not_terminals:
@@ -120,26 +181,32 @@ class Relation:
         str_to = ' ' * 30
         for key in self.r_table:
             str_to += '{:5s}'.format(key[:5])
-
+        addition = ''
+        count = 0
         str_to += '\n'
         for key, value in self.r_table.items():
             str_to += '{:30s}'.format(key)
+            # addition += key + ' '
             for k, v in value.items():
+                # print(v)
+                if not v == '.    ':
+                    addition += key + ' ' + k + ' ' + v + '\n'
+                    count += 1
                 # print(key,k,v)
                 # print(len(v))
                 str_to += '{:5s}'.format(v)
                 # str_to += v
             str_to += '\n'
-        str_to += 'Count of conflicts is {}'.format(self.count_of_conflicts)
-
-        return str_to
+        str_to += 'Count of conflicts is {}\n'.format(self.count_of_conflicts)
+        # print(self.first_plus('<sign>'))
+        return str_to + addition + '\nNumber of signs:{}'.format(count)
 
     def first_rule(self, word1, word2):
         if word2 in self.not_terminals:
             firsts = self.first_plus(word2)
             for one in firsts:
                 # print(word1, one)
-                if self.r_table[word1][one] == 'o    ' or self.r_table[word1][one] == '<':
+                if self.r_table[word1][one] == '.    ' or self.r_table[word1][one] == '<':
                     self.r_table[word1][one] = '<'
                 else:
                     self.count_of_conflicts += 1
@@ -152,7 +219,7 @@ class Relation:
             if word2 in self.terminals:
                 for one in lasts:
                     # print(one, word2)
-                    if self.r_table[one][word2] == 'o    ' or self.r_table[one][word2] == '>':
+                    if self.r_table[one][word2] == '.    ' or self.r_table[one][word2] == '>':
                         self.r_table[one][word2] = '>'
                     else:
                         self.count_of_conflicts += 1
@@ -162,7 +229,7 @@ class Relation:
                 for one in lasts:
                     for one_f in firsts:
                         # print('kek')
-                        if self.r_table[one][one_f] == 'o    ' or self.r_table[one][one_f] == '>':
+                        if self.r_table[one][one_f] == '.    ' or self.r_table[one][one_f] == '>':
                             self.r_table[one][one_f] = '>'
                         else:
                             self.count_of_conflicts += 1

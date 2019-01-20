@@ -114,3 +114,7 @@ dmypy.json
 .pyre/
 
 .idea
+.idea/translator.iml
+.idea/misc.xml
+.idea/misc.xml
+.idea/translator.iml

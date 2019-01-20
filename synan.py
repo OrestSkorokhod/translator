@@ -45,51 +45,52 @@ class SyntaxAnalyser:
             return False
 
     def log_f(self):
-        # print(lexan.lexems_out[self.i]['lex'])
         if lexan.lexems_out[self.i]['lex'] == '(':
             self.i += 1
             if self.log_e():
                 if lexan.lexems_out[self.i]['lex'] == ')':
                     self.i += 1
                     return True
-                else:
-                    self.syntax_error('missing ")"')
-                    return False
-            else:
-                self.syntax_error('missing logical expression')
+                self.syntax_error('missing ")" after logical expression')
                 return False
+            self.syntax_error('missing logical expression after "(" ')
+            return False
         if lexan.lexems_out[self.i]['lex'] == '!':
             self.i += 1
             if self.log_f():
                 return True
             else:
-                self.syntax_error('missing logical expression after "!"')
+                self.syntax_error('missing logical expression after "!" ')
                 return False
         if self.relation():
             return True
         return False
 
     def log_t(self):
-        while self.log_f():
-            if lexan.lexems_out[self.i]['lex'] == 'and':
+        if self.log_f():
+            while lexan.lexems_out[self.i]['lex'] == 'and':
                 self.i += 1
-            else:
-                return True
-        else:
-            self.syntax_error('missing log_f')
-            return False
+                if self.log_f():
+                    pass
+                else:
+                    self.syntax_error('missing logical expression after "and" ')
+                    return False
+            return True
+        return False
 
     def log_e(self):
-        while self.log_t():
-            if lexan.lexems_out[self.i]['lex'] == 'or':
+        if self.log_t():
+            while lexan.lexems_out[self.i]['lex'] == 'or':
                 self.i += 1
-            else:
-                return True
-        else:
-            self.syntax_error('missing log_t')
-            return False
+                if self.log_t():
+                    pass
+                else:
+                    self.syntax_error('missing logical expression after "or" ')
+                    return False
+            return True
+        return False
 
-    def kft(self):
+    def constant(self):
         for lex in lexan.con_out:
             if lexan.lexems_out[self.i]['lex'] == lex['name']:
                 self.i += 1
@@ -97,23 +98,10 @@ class SyntaxAnalyser:
         else:
             return False
 
-    def kpt(self):
-        if self.kft():
-            return True
-        # if self.kft():
-        #     if lexan.lexems_out[self.i]['lex'] == 'e' or lexan.lexems_out[self.i]['lex'] == 'E':
-        #         self.i += 1
-        #         self.sign()
-        #         if self.cbz():
-        #             return True
-
     def f_exp(self):
-        if lexan.lexems_out[self.i]['lex'] == '}':
-            self.i += 1
-            return True
-        if self.kpt():
-            return True
         if self.id_():
+            return True
+        if self.constant():
             return True
         if lexan.lexems_out[self.i]['lex'] == '(':
             self.i += 1
@@ -121,45 +109,44 @@ class SyntaxAnalyser:
                 if lexan.lexems_out[self.i]['lex'] == ')':
                     self.i += 1
                     return True
-                else:
-                    self.syntax_error('missing ")"')
-                    return False
-            else:
-                self.syntax_error('missing expression')
+                self.syntax_error('missing ")" after expression')
                 return False
-        else:
+            self.syntax_error('missing expression after "(" ')
             return False
+        return False
 
     def sign(self):
-        if lexan.lexems_out[self.i]['lex'] == '+' or lexan.lexems_out[self.i]['lex'] == '-':
+        if lexan.lexems_out[self.i]['lex'] in ['+', '-']:
             self.i += 1
 
     def t_exp(self):
         self.sign()
-
-        while self.f_exp():
-            if lexan.lexems_out[self.i]['lex'] == '/' or lexan.lexems_out[self.i]['lex'] == '*':
+        if self.f_exp():
+            while lexan.lexems_out[self.i]['lex'] in ['*', '/']:
+                znak = lexan.lexems_out[self.i]['lex']
                 self.i += 1
-                self.sign()
-            elif lexan.lexems_out[self.i]['lex'] == '\\n':
-                return True
-            else:
-                return True
-        self.syntax_error('missing expression(F)')
+                if self.f_exp():
+                    pass
+                else:
+                    self.syntax_error('missing expression(F) after {}'.format(znak))
+                    return False
+            return True
         return False
 
     def expression(self):
-        while self.t_exp():
-            if lexan.lexems_out[self.i]['lex'] == '+' or lexan.lexems_out[self.i]['lex'] == '-':
+        if self.t_exp():
+            while lexan.lexems_out[self.i]['lex'] in ['+', '-']:
+                znak = lexan.lexems_out[self.i]['lex']
                 self.i += 1
-            elif lexan.lexems_out[self.i]['lex'] == '\\n':
-                return True
-            else:
-                return True
+                if self.t_exp():
+                    pass
+                else:
+                    self.syntax_error('missing expression(T) after {}'.format(znak))
+                    return False
+            return True
         return False
 
     def loop(self):
-
         if lexan.lexems_out[self.i]['lex'] == 'while':
             self.i += 1
             if self.log_e():
@@ -226,26 +213,42 @@ class SyntaxAnalyser:
     def input(self):
         if lexan.lexems_out[self.i]['lex'] == 'cin':
             self.i += 1
-            while lexan.lexems_out[self.i]['lex'] == '>>':
+            if lexan.lexems_out[self.i]['lex'] == '>>':
                 self.i += 1
                 if self.id_():
-                    pass
-                else:
-                    # self.syntax_error('missing >> or end of line')
-                    return False
-            return True
+                    while lexan.lexems_out[self.i]['lex'] == '>>':
+                        self.i += 1
+                        if self.id_():
+                            pass
+                        else:
+                            self.syntax_error('missing identifier to input')
+                            return False
+                    return True
+                self.syntax_error('missing identifier to input')
+                return False
+            self.syntax_error('missing >> after "cin"')
+            return False
+        return False
 
     def output(self):
         if lexan.lexems_out[self.i]['lex'] == 'cout':
             self.i += 1
-            while lexan.lexems_out[self.i]['lex'] == '<<':
+            if lexan.lexems_out[self.i]['lex'] == '<<':
                 self.i += 1
                 if self.id_():
-                    pass
-                else:
-                    self.syntax_error('missing identifier to output')
-                    return False
-            return True
+                    while lexan.lexems_out[self.i]['lex'] == '<<':
+                        self.i += 1
+                        if self.id_():
+                            pass
+                        else:
+                            self.syntax_error('missing identifier to output')
+                            return False
+                    return True
+                self.syntax_error('missing identifier to output')
+                return False
+            self.syntax_error('missing << after "cout"')
+            return False
+        return False
 
     def op(self):
         if self.loop():
@@ -258,44 +261,23 @@ class SyntaxAnalyser:
             return True
         if self.assigning():
             return True
-        # if lexan.lexems_out[self.i]['lex'] == '}':
-        #     return True
         return False
 
     def sp_op(self):
         if self.op():
-            # print(self.i, len(lexan.lexems_out))
-            if self.i + 1 >= len(lexan.lexems_out):
-                self.syntax_error('missing end of line')
-                return False
             if lexan.lexems_out[self.i]['lex'] == '\\n':
-                # print(lexan.lexems_out[self.i]['lex'])
                 self.i += 1
-                while lexan.lexems_out[self.i]:
-                    if self.op():
-                        if self.i + 1 >= len(lexan.lexems_out):
-                            self.syntax_error('missing end of line')
-                            return False
-                        if lexan.lexems_out[self.i]['lex'] == '\\n':
-                            self.i += 1
-                        # elif lexan.lexems_out[self.i]['lex'] == '}':
-                        #     return True
-                        else:
-                            self.syntax_error('missing end of line')
-                            return False
+                while self.op():
+                    if lexan.lexems_out[self.i]['lex'] == '\\n':
+                        self.i += 1
                     else:
-                        if lexan.lexems_out[self.i]['lex'] == '}':
-                            return True
-                        else:
-                            self.syntax_error('missing operator or end of program')
-                            return False
+                        self.syntax_error('missing end of line')
+                        return False
                 return True
-            else:
-                self.syntax_error('missing end of line')
-                return False
-        else:
-            self.syntax_error('incorrect operator')
+            self.syntax_error('missing end of line')
             return False
+        else:
+            self.syntax_error('missing operator')
 
     def op_block(self):
         if lexan.lexems_out[self.i]['lex'] == '{':
@@ -323,6 +305,7 @@ class SyntaxAnalyser:
         for idn in lexan.idn_out:
             if lexan.lexems_out[self.i]['lex'] == idn['lex']:
                 self.i += 1
+                # print(idn['lex'])
                 return True
         else:
             # self.syntax_error('incorrect identifier')
@@ -335,11 +318,10 @@ class SyntaxAnalyser:
                 if self.id_():
                     pass
                 else:
+                    self.syntax_error('missing identifier')
                     return False
-            if lexan.lexems_out[self.i]['lex'] == '\\n':
-                # self.i += 1
+            else:
                 return True
-            return False
         else:
             self.syntax_error('missing identifier')
             return False
@@ -352,7 +334,8 @@ class SyntaxAnalyser:
             self.i += 1
             return True
         else:
-            self.syntax_error('incorrect type')
+            return False
+            # self.syntax_error('incorrect type')
 
     def og(self):
         if self.type_():
@@ -362,22 +345,23 @@ class SyntaxAnalyser:
                 self.syntax_error('incorrect list of variables')
                 return False
         else:
-            self.syntax_error('incorrect type of variable')
+            # self.syntax_error('incorrect type of variable')
             return False
 
     def sp_og(self):
         if self.og():
             while lexan.lexems_out[self.i]['lex'] == '\\n':
                 self.i += 1
-                if lexan.lexems_out[self.i]['lex'] == '{':
-                    return True
                 if self.og():
                     pass
-                elif lexan.lexems_out[self.i]['lex'] == '{':
-                    return True
+                # elif lexan.lexems_out[self.i]['lex'] == '{':
+                #     return True
                 else:
-                    self.syntax_error('missing declaration or end of declaration list')
-                    return False
+                    # self.syntax_error('missing declaration or end of declaration list')
+                    return True
+            else:
+                self.syntax_error('missing end of line')
+                return False
 
         else:
             self.syntax_error('missing first declaration')
