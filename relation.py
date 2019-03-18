@@ -54,7 +54,7 @@ class Relation:
                         # '<loop1>': [['<loop>']],
                         '<loop>': [['while', '<LE1>', 'do', '<operators block>']],
                         # '<condition1>': [['<condition>']],
-                        '<condition>': [['if', '<LE1>', '?', '<operators block>']],
+                        '<condition>': [['if', '<LE1>', '?', '<operators block>', ':', '<operators block>']],
                         '<assigning>': [['id', '=', '<E1>']],
                         '<input>': [['cin', '>>', 'id'], ['<input>', '>>', 'id']],
                         '<output>': [['cout', '<<', 'id'], ['<output>', '<<', 'id']],
@@ -66,13 +66,13 @@ class Relation:
                                 ['<T1>']],
 
                         '<T1>': [['<T>']],
-                        '<T>': [['<T>', '*', '<F1>'], ['<T>', '/', '<F1>'], ['<sign1>', '<F1>']],
+                        '<T>': [['<T>', '*', '<F1>'], ['<T>', '/', '<F1>'], ['<F1>']],
 
                         '<F1>': [['<F>']],
-                        '<F>': [['id'], ['con'], ['(', '<E1>', ')']],
+                        '<F>': [['id'], ['-', 'id'], ['+', 'id'], ['con'], ['-', 'con'], ['(', '<E1>', ')']],
 
-                        '<sign1>': [['<sign>']],
-                        '<sign>': [['-'], ['+']],
+                        # '<sign1>': [['<sign>']],
+                        # '<sign>': [['-'], ['+']],
 
                         '<LE1>': [['<LE>']],
                         '<LE>': [['<LT1>'], ['<LE>', 'or', '<LT1>']],
@@ -234,6 +234,3 @@ class Relation:
                         else:
                             self.count_of_conflicts += 1
                             self.r_table[one][one_f] += '>'
-
-
-

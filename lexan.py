@@ -19,11 +19,11 @@ idn_out = []
 con_out = []
 is_og = False
 znak = ['+', '-']
-rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}', ':']
+rozdilniki = [' ', '(', ')', '\n', '\t', '=', '*', '/', '?', ',', '{', '}', ':', ']', '[']
 lexems_in = ['int', 'float', 'while', 'do', 'if', 'cin',
              'cout', '{', '}', ',', '.', ':', '=', '<<',
              '>>', '<', '>', '<=', '>=', '==', '!=', '+', '-', '*',
-             '(', ')', '/', '?', '\n', 'or', 'and', '!']
+             '(', ')', '/', '?', '\n', 'or', 'and', '!', ']', '[']
 errors = ['unknown idn', 'unknown symbol', 'unallowed declaration', 'undeclarated variable', 're-declaration variable']
 
 table = BeautifulTable()

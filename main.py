@@ -5,14 +5,11 @@ from tkinter.filedialog import askopenfilename,asksaveasfilename
 # from tkintertable.TableModels import TableModel
 import lexan
 import synan
-import  mpa
-import  relation
+import mpa
+import relation
 
-
-# class AnalysisTable:
-#
-#     def __init__(self):
-#         window = tkinter.Toplevel(root)
+# from synan5 import SyntaxAnalyser5
+import synan5
 
 
 
@@ -20,6 +17,7 @@ class Complier:
     def __init__(self, root, file_name):
         self.an_table = ''
         self.rel_table = ''
+        self.rozbir_table = ''
         self.toolbar = Frame(root, bg="#AAAAAA")
         self.top_frame = Frame(root, bg="#AACAAA")
         self.bottom_frame = Frame(root, bg="#AADADA")
@@ -38,6 +36,8 @@ class Complier:
         self.rozbir_button = Button(self.toolbar, text="Analysis table")
         self.relation_button = Button(self.toolbar, text="Relation table")
 
+        self.rozbit_table_button = Button(self.toolbar, text="Rozbir Table")
+
         self.open_file_button.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
         self.save_button.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
         self.compile_button.grid(row=0, column=2, padx=5, pady=5, ipadx=5, ipady=5)
@@ -48,6 +48,8 @@ class Complier:
 
         self.rozbir_button.grid(row=0, column=6, padx=5, pady=5, ipadx=5, ipady=5)
         self.relation_button.grid(row=0, column=7, padx=5, pady=5, ipadx=5, ipady=5)
+
+        self.rozbit_table_button.grid(row=0, column=8, padx=5, pady=5, ipadx=5, ipady=5)
 
 
         self.text_area_top = Text(self.top_frame, font='Consolas 14', height=15, wrap=NONE)
@@ -104,6 +106,8 @@ class Complier:
         self.rozbir_button.bind("<1>", self.rozbir_table_handler)
         self.relation_button.bind("<1>", self.relation_table_handler)
 
+        self.rozbit_table_button.bind("<1>", self.rozbir_handler)
+
         self.text_area_bottom.config(state=DISABLED)
 
     def edit_bottom_textarea(method_to_decorate):
@@ -116,6 +120,22 @@ class Complier:
             args[0].text_area_bottom.config(state=DISABLED)
 
         return wrapper
+
+
+    @edit_bottom_textarea
+    def rozbir_handler(self, event):
+
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("Rozbir table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, self.rozbir_table)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
 
     @edit_bottom_textarea
     def relation_table_handler(self, event):
@@ -231,8 +251,15 @@ class Complier:
             else:
                 text2 = lexan.error_text[0]
         else:
-            SynAn = synan.SyntaxAnalyser()
-            SynAn.prog()
+
+            rel = relation.Relation()
+            self.rel_table = rel.make_table()
+
+            #syntax analyser 2 lab
+            # SynAn = synan.SyntaxAnalyser()
+            # SynAn.prog()
+
+            #syntax analyser 2 lab
             # SynAn = mpa.MPA()
             # SynAn.automat()
             # self.an_table = SynAn.make_table()
@@ -245,11 +272,20 @@ class Complier:
                     text2 = lexan.error_text[0]
             else:
                 text2 = 'Successfully\n'
+
+            try:
+                syn = synan5.SyntaxAnalyser5()
+                syn.analyse()
+            except Warning as e:
+                text2 = str(e)
+            finally:
+                self.rozbir_table = syn.rozbir_table
+                # text2 += self.rozbir_table
                 # text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
         # machine = mpa.MPA()
-        rel = relation.Relation()
-        self.rel_table = rel.make_table()
+        # rel = relation.Relation()
+        # self.rel_table = rel.make_table()
         # print(self.rel_table)
         self.text_area_bottom.insert(1.0, text2)
 
@@ -269,7 +305,5 @@ if __name__ == "__main__":
     FILE_NAME = 'test.txt'
     root = Tk()
     gui = Complier(root, FILE_NAME)
-    root.state('zoomed')
+    root.state('normal')
     root.mainloop()
-
-
