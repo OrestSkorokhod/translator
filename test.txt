@@ -1,13 +1,35 @@
-float a, d
-int b, i,c, k
-{ a = a+5/ - 9
-if [a<=-b/a +5] ? { cout<<b
-cout<<a
-}:{ a = 5
+float result
+int a, b , c , d
+{ a = 75*3/25 + 256/16/4*3 -11
 }
-b=a
-c=a
-while [a<=5] and [a<b] or !!![c!=d] do { c =i
-}
-cin>>b>>c
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

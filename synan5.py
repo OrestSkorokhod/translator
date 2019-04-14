@@ -16,25 +16,20 @@ class SyntaxAnalyser5:
     rel_table = None
     copy_lexemes = []
     rozbir_table = ''
+    poliz = []
     def __init__(self):
         self.stack = [self.reshitka]
         rel = Relation()
         self.rel_table = dict(rel.r_table)
         self.rel_table['#'] = dict()
         for k in rel.r_table:
-            # print(k)
             self.rel_table['#'][k] = '<'
-            # print(self.rel_table['#'][k])
             self.rel_table[k]['#'] = '>'
-        # self.rel_table['<=']['('] = '>'
-        # print(self.rel_table['#'])
 
-
-        # print(rel_table)
         self.from_table_to_list(lexan.lexems_out)
-        # print(self.lexemes)
+
         self.lexemes.append(Lexem(lexem='#'))
-        # self.analyse()
+
 
     def from_table_to_list(self, lexems_out):
         for string in lexems_out:
@@ -47,14 +42,11 @@ class SyntaxAnalyser5:
             lex.con_code = string['con_code']
             self.lexemes.append(lex)
             self.copy_lexemes.append(lex)
-        # self.copy_lexemes = list(self.lexemes)
+
 
 
     def compare(self, lex):
         def id_or_con_check(element):
-            #   str(self.stack[len(self.stack) - 1]) if self.stack[len(self.stack) - 1].idn_code == '' else 'id'
-            # print(element)
-            # print(type(element))
             if element.idn_code != '':
                 return 'id'
             elif element.con_code != '':
@@ -62,107 +54,152 @@ class SyntaxAnalyser5:
             else:
                 return element
 
-        # print('peak: {}'.format(self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))]))
-        # print(str(id_or_con_check(lex)))
-        # print(self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))]['float'])
         if str(self.stack[len(self.stack) - 1]) == '<program>':
             print('all is ok')
         else:
-            if self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))] in ('=', '<'):
+
+            relation = self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))]
+
+            self.rozbir_table += '| {} '.format(relation)
+
+            self.rozbir_table += '| {}'.format(','.join([str(self.copy_lexemes[i - 1]) for i in range(self.number_of_lexems_out, len(self.lexemes))])).ljust(100)
+
+            if relation in ('=', '<'):
                 self.stack.append(lex)
                 print('appended')
                 print('Stack: {}'.format(self.stack))
-                self.rozbir_table += '{}'.format(','.join([str(i) for i in self.stack])).ljust(100)
                 self.rozbir_table += '|'.ljust(60)
-                self.rozbir_table += '|'.ljust(60) + '\n'
-            elif self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))] == '>':
-                rule = []
-                # print('peak: {}'.format(self.stack[len(self.stack) - 1]))
+                self.rozbir_table += '|{}'.format(','.join([str(i) for i in self.poliz])) + '\n'
+                self.write_stack()
 
-                # if self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 2]))][str(id_or_con_check(self.stack[len(self.stack) - 1]))] == '<':
-                #     rule.insert(0, str(self.stack.pop()))
-                # else:
-                #     if len(self.stack) > 1:
-                #         while self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 2]))][str(id_or_con_check(self.stack[len(self.stack) - 1]))] != '<':
-                #             print('lol')
-                #             rule.insert(0, str(self.stack.pop()))
+            elif relation == '>':
+                rule = []
+
                 while self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 2]))][str(id_or_con_check(self.stack[len(self.stack) - 1]))] != '<':
-                    # print('lol')
                     rule.insert(0, str(self.stack.pop()))
                 rule.insert(0, str(self.stack.pop()))
 
-                self.rozbir_table += '{}'.format(','.join([str(i) for i in self.stack])).ljust(100)
                 print('rule: {}'.format(rule))
-                self.rozbir_table += '|{}'.format(''.join([str(i) for i in rule])).ljust(60)
+
+                self.rozbir_table += '| {}'.format(''.join([str(i) for i in rule])).ljust(60)
+
                 for grammar_rule, description in Relation().grammar.items():
                     if rule in description:
+                        print('desc', description)
+                        if len(rule) >= 2 and str(rule[0]) == '-':
+                            print('\n\n\n\n')
+                            self.poliz.append('@')
+                        if len(rule) >= 3 and str(rule[1]) in ('-', '+', '*', '/'):
+                            print('\n\n\n\n')
+                            self.poliz.append(str(rule[1]))
+                        self.rozbir_table += '|{}'.format(','.join([str(i) for i in self.poliz])) + '\n'
                         self.stack.append(Lexem(lexem=grammar_rule, idn_code='', con_code=''))
-                        self.rozbir_table += '|{}'.format(grammar_rule).ljust(60) + '\n'
+                        self.write_stack()
+                        # self.rozbir_table += '|{}'.format(grammar_rule).ljust(60) + '\n'
                         print('Stack: {}'.format(self.stack))
                         self.compare(lex)
-                        # self.stack.append(lex)
-
                         break
                 else:
                     raise Warning('Syntax error in line {} after {}'.format(lex.line, self.get_line(lex)));
+
             else:
                 raise Warning('Syntax error in line {} after {}'.format(lex.line, self.get_line(lex)));
+
 
     def get_line(self, lexem):
         line = []
         for lex in self.copy_lexemes:
-            # print(lex)
             if lex.line == lexem.line and lex.number < lexem.number:
                 line.append(lex.lexem)
             elif lex.line > lexem.line:
                 break
         return ' '.join(line)
 
+    def write_stack(self):
+        self.rozbir_table += '{}'.format(','.join([str(i) for i in self.stack])).ljust(100) # + '\n'
+
+    def count_poliz(self):
+        def summa(a, b):
+            return float(a) + float(b)
+        def vidnim(a, b):
+            return float(a) - float(b)
+        def mnoj(a, b):
+            return float(a) * float(b)
+        def dil(a, b):
+            # print(type(a), type(b))
+            # print(a, b)
+            # print(float(a) / float(b))
+            return float(a) / float(b)
+        def un_min(a):
+            return - float(a)
+
+
+
+        opers = {'+': summa,
+                 '-': vidnim,
+                 '*': mnoj,
+                 '/': dil,
+                 '@': un_min}
+
+        self.rozbir_poliz_table = ''
+
+        self.poliz_stack = []
+        number = 0
+        # print('keke', dil(225, 25))
+        for j in self.poliz:
+            # print(j)
+            number += 1
+            # print(number)
+            self.rozbir_poliz_table += '{}'.format(','.join([str(i) for i in self.poliz_stack])).ljust(70)
+            self.rozbir_poliz_table += '| {}'.format(','.join([str(self.poliz[i-1]) for i in range(number, len(self.poliz)+1)])).ljust(70) + '\n'
+            if j.isdigit():
+
+
+                self.poliz_stack.append(j)
+
+            elif j in ('+', '-', '*', '/'):
+                r2 = self.poliz_stack.pop()
+                r1 = self.poliz_stack.pop()
+                self.poliz_stack.append(opers.get(j)(r1, r2))
+            elif j == '@':
+                r1 = self.poliz_stack.pop()
+                self.poliz_stack.append(opers.get(j)(r1))
+        self.rozbir_poliz_table += '{}'.format(','.join([str(i) for i in self.poliz_stack])).ljust(70)
+        return self.poliz_stack[0]
+
+
+
+
 
     def analyse(self):
         self.stack = []
+        is_declaration = True
         self.stack.append(self.reshitka)
         self.lexemes = []
+        self.poliz = []
         self.from_table_to_list(lexan.lexems_out)
+
+        self.write_stack()
+
+        self.number_of_lexems_out = 0
+
         for lex in self.lexemes:
+            self.number_of_lexems_out += 1
+            if lex.lexem == '{':
+                is_declaration = False
             print('------------')
             print('Lexem: {}'.format(lex.lexem))
             print('Stack: {}'.format(self.stack))
-            # print(lex.idn_code)
-            # new_lex = Lexem()
 
             if lex.idn_code != '':
+                # if not is_declaration:
+                    # self.poliz.append(lex.lexem)
                 lex.lexem = 'id'
             elif lex.con_code != '':
+                if not is_declaration:
+                    self.poliz.append(lex.lexem)
                 lex.lexem = 'con'
 
-            # self.rozbir_table += '{}'.format(lex)
-
             self.compare(lex)
-
-
-            # if self.stack[len(self.stack) - 1] == '#' or \
-            #  self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))] in ('=', '<'):
-            #     self.stack.append(lex)
-            #     print('appended')
-            # elif self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))] == '>':
-            #     rule = []
-            #
-            #     while self.stack[len(self.stack) - 2] == '#' or \
-            #     self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 2]))][str(id_or_con_check(self.stack[len(self.stack) - 1]))] != '<':
-            #         # print(self.stack)
-            #         rule.insert(0, str(self.stack.pop()))
-            #         if self.stack[len(self.stack) - 1] == '#':
-            #             break
-            #
-            #     print('rule: {}'.format(rule))
-            #     for grammar_rule, description in Relation().grammar.items():
-            #         if rule in description:
-            #             self.stack.append(Lexem(lexem=grammar_rule, idn_code='', con_code=''))
-            #
-            #             self.compare(lex)
-            #
-            #
-            #             self.stack.append(lex)
-            #
-            #             break
+        print(self.poliz)
+        print(self.count_poliz())

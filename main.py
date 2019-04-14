@@ -37,6 +37,7 @@ class Complier:
         self.relation_button = Button(self.toolbar, text="Relation table")
 
         self.rozbit_table_button = Button(self.toolbar, text="Rozbir Table")
+        self.rozbit_poliz_table_button = Button(self.toolbar, text="Rozbir Poliz Table")
 
         self.open_file_button.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
         self.save_button.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
@@ -50,6 +51,7 @@ class Complier:
         self.relation_button.grid(row=0, column=7, padx=5, pady=5, ipadx=5, ipady=5)
 
         self.rozbit_table_button.grid(row=0, column=8, padx=5, pady=5, ipadx=5, ipady=5)
+        self.rozbit_poliz_table_button.grid(row=0, column=9, padx=5, pady=5, ipadx=5, ipady=5)
 
 
         self.text_area_top = Text(self.top_frame, font='Consolas 14', height=15, wrap=NONE)
@@ -107,6 +109,7 @@ class Complier:
         self.relation_button.bind("<1>", self.relation_table_handler)
 
         self.rozbit_table_button.bind("<1>", self.rozbir_handler)
+        self.rozbit_poliz_table_button.bind("<1>", self.rozbir_poliz_handler)
 
         self.text_area_bottom.config(state=DISABLED)
 
@@ -121,6 +124,21 @@ class Complier:
 
         return wrapper
 
+
+    @edit_bottom_textarea
+    def rozbir_poliz_handler(self, event):
+
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title("Rozbir poliz table")
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, self.rozbir_poliz_table)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
 
     @edit_bottom_textarea
     def rozbir_handler(self, event):
@@ -280,6 +298,7 @@ class Complier:
                 text2 = str(e)
             finally:
                 self.rozbir_table = syn.rozbir_table
+                self.rozbir_poliz_table = syn.rozbir_poliz_table
                 # text2 += self.rozbir_table
                 # text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 
