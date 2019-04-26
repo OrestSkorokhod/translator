@@ -10,6 +10,7 @@ import relation
 
 # from synan5 import SyntaxAnalyser5
 import synan5
+from lab7 import Lab7
 
 
 
@@ -294,11 +295,13 @@ class Complier:
             try:
                 syn = synan5.SyntaxAnalyser5()
                 syn.analyse()
+                lab7 = Lab7(syn.from_table_to_list(lexan.lexems_out))
             except Warning as e:
                 text2 = str(e)
             finally:
                 self.rozbir_table = syn.rozbir_table
                 self.rozbir_poliz_table = syn.rozbir_poliz_table
+
                 # text2 += self.rozbir_table
                 # text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
 

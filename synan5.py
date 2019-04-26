@@ -15,6 +15,7 @@ class SyntaxAnalyser5:
     stack = [reshitka]
     rel_table = None
     copy_lexemes = []
+
     rozbir_table = ''
     poliz = []
     def __init__(self):
@@ -32,6 +33,8 @@ class SyntaxAnalyser5:
 
 
     def from_table_to_list(self, lexems_out):
+        kek_lexemes = []
+
         for string in lexems_out:
             lex = Lexem()
             lex.number = string['number']
@@ -42,6 +45,9 @@ class SyntaxAnalyser5:
             lex.con_code = string['con_code']
             self.lexemes.append(lex)
             self.copy_lexemes.append(lex)
+            kek_lexemes.append(lex)
+            
+        return kek_lexemes
 
 
 
@@ -55,7 +61,8 @@ class SyntaxAnalyser5:
                 return element
 
         if str(self.stack[len(self.stack) - 1]) == '<program>':
-            print('all is ok')
+            # print('all is ok')
+            pass
         else:
 
             relation = self.rel_table[str(id_or_con_check(self.stack[len(self.stack) - 1]))][str(id_or_con_check(lex))]
@@ -66,8 +73,8 @@ class SyntaxAnalyser5:
 
             if relation in ('=', '<'):
                 self.stack.append(lex)
-                print('appended')
-                print('Stack: {}'.format(self.stack))
+                # print('appended')
+                # print('Stack: {}'.format(self.stack))
                 self.rozbir_table += '|'.ljust(60)
                 self.rozbir_table += '|{}'.format(','.join([str(i) for i in self.poliz])) + '\n'
                 self.write_stack()
@@ -79,24 +86,24 @@ class SyntaxAnalyser5:
                     rule.insert(0, str(self.stack.pop()))
                 rule.insert(0, str(self.stack.pop()))
 
-                print('rule: {}'.format(rule))
+                # print('rule: {}'.format(rule))
 
                 self.rozbir_table += '| {}'.format(''.join([str(i) for i in rule])).ljust(60)
 
                 for grammar_rule, description in Relation().grammar.items():
                     if rule in description:
-                        print('desc', description)
+                        # print('desc', description)
                         if len(rule) >= 2 and str(rule[0]) == '-':
-                            print('\n\n\n\n')
+                            # print('\n\n\n\n')
                             self.poliz.append('@')
                         if len(rule) >= 3 and str(rule[1]) in ('-', '+', '*', '/'):
-                            print('\n\n\n\n')
+                            # print('\n\n\n\n')
                             self.poliz.append(str(rule[1]))
                         self.rozbir_table += '|{}'.format(','.join([str(i) for i in self.poliz])) + '\n'
                         self.stack.append(Lexem(lexem=grammar_rule, idn_code='', con_code=''))
                         self.write_stack()
                         # self.rozbir_table += '|{}'.format(grammar_rule).ljust(60) + '\n'
-                        print('Stack: {}'.format(self.stack))
+                        # print('Stack: {}'.format(self.stack))
                         self.compare(lex)
                         break
                 else:
@@ -187,9 +194,9 @@ class SyntaxAnalyser5:
             self.number_of_lexems_out += 1
             if lex.lexem == '{':
                 is_declaration = False
-            print('------------')
-            print('Lexem: {}'.format(lex.lexem))
-            print('Stack: {}'.format(self.stack))
+            # print('------------')
+            # print('Lexem: {}'.format(lex.lexem))
+            # print('Stack: {}'.format(self.stack))
 
             if lex.idn_code != '':
                 # if not is_declaration:
