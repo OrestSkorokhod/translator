@@ -1,7 +1,21 @@
 float result
-int a, b , c , d
-{ a = 75 + 3
+int a, b , c , d ,q, u , i, j, k
+{ a = 5
+cout<<a
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

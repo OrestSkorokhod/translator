@@ -46,7 +46,7 @@ class SyntaxAnalyser5:
             self.lexemes.append(lex)
             self.copy_lexemes.append(lex)
             kek_lexemes.append(lex)
-            
+
         return kek_lexemes
 
 
@@ -209,4 +209,4 @@ class SyntaxAnalyser5:
 
             self.compare(lex)
         print(self.poliz)
-        print(self.count_poliz())
+        # print(self.count_poliz())

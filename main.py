@@ -299,8 +299,10 @@ class Complier:
             except Warning as e:
                 text2 = str(e)
             finally:
-                self.rozbir_table = syn.rozbir_table
-                self.rozbir_poliz_table = syn.rozbir_poliz_table
+
+                # self.rozbir_table = syn.rozbir_table
+                # self.rozbir_poliz_table = syn.rozbir_poliz_table
+                pass
 
                 # text2 += self.rozbir_table
                 # text2 += 'lexemes table\n' + lexan.lex_str + 'idn table\n' + lexan.idn_str + 'con table\n' + lexan.con_str
