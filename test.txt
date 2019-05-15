@@ -1,6 +1,6 @@
 float a, b , c 
-{ cin>>a
-cin>>b
+{ a = 5
+b =15
 while [a < b ] do { a = a + 1
 if [a > 12] ? {c = a * a
 cout<<a<<c
@@ -8,6 +8,13 @@ cout<<a<<c
 }
 }
 }
+
+
+
+
+
+
+
 
 
 

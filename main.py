@@ -19,6 +19,9 @@ class Complier:
         self.an_table = ''
         self.rel_table = ''
         self.rozbir_table = ''
+
+        self.pobudova_poliz = ''
+        self.rozbir_poliz_table = ''
         self.toolbar = Frame(root, bg="#AAAAAA")
         self.top_frame = Frame(root, bg="#AACAAA")
         self.bottom_frame = Frame(root, bg="#AADADA")
@@ -37,8 +40,10 @@ class Complier:
         self.rozbir_button = Button(self.toolbar, text="Analysis table")
         self.relation_button = Button(self.toolbar, text="Relation table")
 
-        self.rozbit_table_button = Button(self.toolbar, text="Rozbir Table")
-        self.rozbit_poliz_table_button = Button(self.toolbar, text="Rozbir Poliz Table")
+        self.rozbir_table_button = Button(self.toolbar, text="Rozbir Table")
+        self.rozbir_poliz_table_button = Button(self.toolbar, text="Rozbir Poliz Table")
+
+        self.pobudova_poliz_button = Button(self.toolbar, text="pobudova_poliz table")
 
         self.open_file_button.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5)
         self.save_button.grid(row=0, column=1, padx=5, pady=5, ipadx=5, ipady=5)
@@ -51,8 +56,11 @@ class Complier:
         self.rozbir_button.grid(row=0, column=6, padx=5, pady=5, ipadx=5, ipady=5)
         self.relation_button.grid(row=0, column=7, padx=5, pady=5, ipadx=5, ipady=5)
 
-        self.rozbit_table_button.grid(row=0, column=8, padx=5, pady=5, ipadx=5, ipady=5)
-        self.rozbit_poliz_table_button.grid(row=0, column=9, padx=5, pady=5, ipadx=5, ipady=5)
+        self.rozbir_table_button.grid(row=0, column=8, padx=5, pady=5, ipadx=5, ipady=5)
+        self.rozbir_poliz_table_button.grid(row=0, column=9, padx=5, pady=5, ipadx=5, ipady=5)
+
+        self.pobudova_poliz_button.grid(row=0, column=8, padx=5, pady=5, ipadx=5, ipady=5)
+
 
 
         self.text_area_top = Text(self.top_frame, font='Consolas 14', height=15, wrap=NONE)
@@ -109,8 +117,10 @@ class Complier:
         self.rozbir_button.bind("<1>", self.rozbir_table_handler)
         self.relation_button.bind("<1>", self.relation_table_handler)
 
-        self.rozbit_table_button.bind("<1>", self.rozbir_handler)
-        self.rozbit_poliz_table_button.bind("<1>", self.rozbir_poliz_handler)
+        self.rozbir_table_button.bind("<1>", self.rozbir_handler)
+        self.rozbir_poliz_table_button.bind("<1>", self.rozbir_poliz_handler)
+
+        self.pobudova_poliz_button.bind("<1>", self.pobudova_poliz_handler)
 
         self.text_area_bottom.config(state=DISABLED)
 
@@ -228,6 +238,20 @@ class Complier:
         text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
         new_window.state('zoomed')
 
+    @edit_bottom_textarea
+    def pobudova_poliz_handler(self, event):
+        # from tkinter.ttk import *
+        new_window = Toplevel()
+        new_window.title('CON table')
+        frame = Frame(new_window, height=50)
+        frame.pack(fill=BOTH)
+
+        text_area = Text(frame, font='Consolas 12', height=50, wrap=NONE)
+        text_area.insert(1.0, self.pobudova_poliz)
+        # np.savetxt(text_area,relationTable,fmt='%.d')
+        text_area.pack(fill=BOTH)  # fill=X,side=LEFT)
+        new_window.state('zoomed')
+
 
     @edit_bottom_textarea
     def open_file_handler(self, event):
@@ -297,6 +321,9 @@ class Complier:
                 syn.analyse()
                 lab7 = Lab7(syn.from_table_to_list(lexan.lexems_out))
                 text2 += lab7.to_print
+                self.pobudova_poliz = lab7.rozbir_poliz_table
+                self.rozbir_poliz_table = lab7.execute_poliz_table
+                # print(self.pobudova_poliz)
             except Warning as e:
                 text2 = str(e)
             finally:

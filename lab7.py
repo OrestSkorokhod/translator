@@ -54,6 +54,8 @@ class Lab7:
         self.poliz = []
         self.mi = []
         self.m = {}
+        self.rozbir_poliz_table = ''
+        self.execute_poliz_table = ''
         self.is_code = False
         self.to_print = ''
         self.priority = {
@@ -143,6 +145,16 @@ class Lab7:
                 # self.debug()
 
                 lexem = self.lexemes.pop(0)
+
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack + stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
+
+
+
+
+
                 # if lexem.lexem in ('(', ')', '[', ']'):
                 #     pass
                 print('lexem in expression:', lexem)
@@ -203,6 +215,18 @@ class Lab7:
             while lexem.lexem != '?':
                 # print('stack', stack)
                 lexem = self.lexemes.pop(0)
+
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
+
+
+
+
+
+
+
                 print('Lexem in if condition:', lexem)
                 if lexem.idn_code or lexem.con_code:
                 # print('p1:', lexem)
@@ -353,6 +377,15 @@ class Lab7:
             while lexem.lexem != 'do':
                 # print('stack', stack)
                 lexem = self.lexemes.pop(0)
+
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
+
+
+
+
                 print('Lexem in while condition:', lexem)
                 if lexem.idn_code or lexem.con_code:
                 # print('p1:', lexem)
@@ -442,6 +475,13 @@ class Lab7:
             self.stack.append(lexem)
 
             while lexem.lexem != '\\n':
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
+
+
+
                 lexem = self.lexemes.pop(0)
                 if lexem.lexem == '>>':
                     continue
@@ -455,6 +495,12 @@ class Lab7:
             self.stack.append(lexem)
 
             while lexem.lexem != '\\n':
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
+
+
                 lexem = self.lexemes.pop(0)
                 if lexem.lexem == '>>':
                     continue
@@ -491,6 +537,10 @@ class Lab7:
                 lexem = self.lexemes[0]
                 print(lexem)
                 i -= 1
+
+                self.rozbir_poliz_table += '{}'.format(lexem).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.stack).ljust(60)
+                self.rozbir_poliz_table += '|{}'.format(self.poliz).ljust(60) + '\n'
 
                 if lexem.lexem == '}':
                     break
